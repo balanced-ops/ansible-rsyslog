@@ -1,0 +1,38 @@
+---
+
+- name: install package
+  apt: name=rsyslog state=present
+  tags: [rsyslog]
+  
+- name: start and enable service
+  service: name=rsyslog state=started enabled=yes
+  tags: [rsyslog]
+
+- name: conf
+  template: src=rsyslog.conf.j2 dest=/etc/rsyslog.conf owner={{ rsyslog_local_user }} group={{ rsyslog_local_group }}
+  notify:
+    - restart rsyslog
+  tags: [rsyslog]
+
+- name: globals
+  copy: src=00-globals.conf dest=/etc/rsyslog.d/00-globals.conf owner=root group=root
+  notify:
+    - restart rsyslog
+  tags: [rsyslog]
+
+- name: forwards
+  template: src=30-forward.conf.j2 dest=/etc/rsyslog.d/30-forward.conf owner=root group=root
+  when: rsyslog_local_forwards
+  notify:
+    - restart rsyslog
+  tags: [rsyslog]
+
+- name: default
+  copy: src=50-default.conf dest=/etc/rsyslog.d/50-default.conf owner=root group=root
+  notify:
+    - restart rsyslog
+  tags: [rsyslog]
+
+- name: log rotation
+  copy: src=logrotate dest=/etc/logrotate.d/rsyslog
+  tags: [rsyslog]

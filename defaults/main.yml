@@ -1,0 +1,25 @@
+---
+
+rsyslog_local_user: root
+
+rsyslog_local_group: root
+
+rsyslog_local_proto: udp
+
+rsyslog_local_port: 514
+
+rsyslog_local_preserve_fqdn: off
+
+rsyslog_local_max_message_size: 128k
+
+rsyslog_local_repeated_msg_reduction: off
+
+rsyslog_local_modules:
+  - imuxsock
+  - imklog
+  - imfile
+  - imudp
+  
+rsyslog_local_spool: /var/spool/rsyslog
+
+rsyslog_local_forwards: []

@@ -1,0 +1,61 @@
+#  /etc/rsyslog.conf    Configuration file for rsyslog v3.
+#
+#                       For more information see
+#                       /usr/share/doc/rsyslog-doc/html/rsyslog_conf.html
+
+#
+# Set max message size
+#
+$MaxMessageSize {{ rsyslog_local_max_message_size }}
+
+#
+# Preserve FQDN
+#
+$PreserveFQDN {{ 'on' if rsyslog_local_preserve_fqdn else 'off' }}
+
+#################
+#### MODULES ####
+#################
+
+{% for module in rsyslog_local_modules %}
+$ModLoad {{ module }}
+{% endfor %}
+
+{% if rsyslog_local_proto == 'udp' %}
+$ModLoad imudp
+$UDPServerRun {{ rsyslog_local_port }}
+{% elif rsyslog_local_proto == 'tcp' %}
+$ModLoad imtcp
+$TCPServerRun {{ rsyslog_local_port }}
+{% endif %}
+
+###########################
+#### GLOBAL DIRECTIVES ####
+###########################
+
+#
+# Use default timestamp format.
+# To enable high precision timestamps, comment out the following line.
+#
+$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
+
+# Filter duplicated messages
+$RepeatedMsgReduction {{ 'on' if rsyslog_local_repeated_msg_reduction else 'off' }}
+
+#
+# Set temporary directory to buffer syslog queue
+#
+$WorkDirectory {{ rsyslog_local_spool }}
+
+#
+# Set the default permissions for all log files.
+#
+$FileOwner {{ rsyslog_local_user }}
+$FileGroup {{ rsyslog_local_user }}
+$FileCreateMode 0640
+$DirCreateMode 0755
+$Umask 0022
+#
+# Include all config files in /etc/rsyslog.d/
+#
+$IncludeConfig /etc/rsyslog.d/*.conf
