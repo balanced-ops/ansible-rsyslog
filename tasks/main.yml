@@ -22,7 +22,7 @@
 
 - name: forwards
   template: src=30-forward.conf.j2 dest=/etc/rsyslog.d/30-forward.conf owner=root group=root
-  when: rsyslog_local_forwards
+  when: rsyslog_local_forwards != []
   notify:
     - restart rsyslog
   tags: [rsyslog]
